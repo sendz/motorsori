@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "../../../../utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { checkSession } from "../../../../utils/supabase/session";
 
 const register = async (formData: FormData) => {
   "use server"
@@ -29,7 +30,9 @@ const register = async (formData: FormData) => {
   }
 }
 
-export default function Register() {
+export default async function Register() {
+  await checkSession()
+
   const _register = async (formData: FormData) => {
     "use server"
     const data = await register(formData)
