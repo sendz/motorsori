@@ -2,12 +2,47 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { createClient } from "../../../../utils/supabase/server";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+
+const register = async (formData: FormData) => {
+  "use server"
+  try {
+    const supabase = createClient()
+
+    const payload = {
+      email: formData.get("email")?.toString()!,
+      password: formData.get("password")?.toString()!,
+      options: {
+        data: {
+          first_name: formData.get("first_name")?.toString()!,
+          last_name: formData.get("last_name")?.toString()!
+        }
+      }
+    }
+
+    const response = await supabase.auth.signUp(payload)
+    return response
+  } catch (e) {
+    console.error(e)
+  }
+}
 
 export default function Register() {
+  const _register = async (formData: FormData) => {
+    "use server"
+    const data = await register(formData)
+
+    if (data) {
+      revalidatePath("/auth/register")
+      redirect("/auth/login")
+    }
+  }
   return (
     <main className="md:container mx-2 md:mx-auto">
       <h2 className="text-center">Register</h2>
-      <form>
+      <form action={_register}>
         <div className="py-2">
           <Label htmlFor="first_name">First Name</Label>
           <Input type="text" name="first_name" id="first_name" placeholder="First Name" required />
