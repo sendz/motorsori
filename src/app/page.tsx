@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/menubar";
 import Image from "next/image";
 import { createClient } from "../../utils/supabase/server";
+import Link from "next/link";
 
 export default async function Home() {
   const supabase = createClient()
@@ -24,7 +25,9 @@ export default async function Home() {
             <MenubarItem>Hello, {user?.user_metadata.first_name}</MenubarItem>
             <MenubarSeparator />
             <MenubarItem>
-              Log out
+              <Link href="/auth/logout">
+                Logout
+              </Link>
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
