@@ -1,14 +1,44 @@
 "use server"
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { checkSession } from "../../../../utils/supabase/session";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { createClient } from "../../../../utils/supabase/server";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { AuthTokenResponse } from "@supabase/supabase-js";
+
+const login = async (formData: FormData) => {
+  "use server"
+  const supabase = createClient()
+  const payload = {
+    email: formData.get("email")?.toString()!,
+    password: formData.get("password")?.toString()!
+  }
+
+  return supabase.auth.signInWithPassword(payload)
+}
 
 export default async function Login() {
+  "use server"
   await checkSession()
+
+  const _login = async (formData: FormData) => {
+    "use server"
+    try {
+      const data: AuthTokenResponse = await login(formData)
+      console.log("DATA", data)
+      if (data.data.user) {
+        revalidatePath("/auth/login")
+        redirect("/")
+      }
+    } catch (e) {
+      console.error("LOGIN ERROR", e)
+    }
+  }
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1 text-center">
@@ -18,7 +48,7 @@ export default async function Login() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4 sm:space-y-6">
+        <form action={_login} className="space-y-4 sm:space-y-6">
           <div className="space-y-1 sm:space-y-2">
             <Input
               label="Email"

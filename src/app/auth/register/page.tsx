@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import { createClient } from "../../../../utils/supabase/server";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
-import { checkSession } from "../../../../utils/supabase/session";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { revalidatePath } from "next/cache";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "../../../../utils/supabase/server";
+import { checkSession } from "../../../../utils/supabase/session";
 
 const register = async (formData: FormData) => {
   "use server"
@@ -43,6 +42,7 @@ export default async function Register() {
       redirect("/auth/login")
     }
   }
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1 text-center">
