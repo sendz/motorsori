@@ -6,6 +6,7 @@ import { createClient } from "../../../../utils/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { checkSession } from "../../../../utils/supabase/session";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const register = async (formData: FormData) => {
   "use server"
@@ -43,30 +44,73 @@ export default async function Register() {
     }
   }
   return (
-    <main className="md:container mx-2 md:mx-auto">
-      <h2 className="text-center">Register</h2>
-      <form action={_register}>
-        <div className="py-2">
-          <Label htmlFor="first_name">First Name</Label>
-          <Input type="text" name="first_name" id="first_name" placeholder="First Name" required />
-        </div>
-        <div className="py-2">
-          <Label htmlFor="last_name">Last Name</Label>
-          <Input type="text" name="last_name" id="last_name" placeholder="Last Name" />
-        </div>
-        <div className="py-2">
-          <Label htmlFor="email">Email as Username</Label>
-          <Input type="email" name="email" id="email" placeholder="Your Email Address" required />
-        </div>
-        <div className="py-2">
-          <Label htmlFor="password">Password</Label>
-          <Input type="password" name="password" placeholder="Password" required />
-        </div>
-        <div className="py-2 flex flex-row justify-between">
-          <Link href="/auth/login" className="link">Have an account? Log in here.</Link>
-          <Button>Register</Button>
-        </div>
-      </form>
-    </main>
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader className="space-y-1 text-center">
+        <CardTitle className="text-2xl font-bold tracking-tight">Create an account</CardTitle>
+        <CardDescription className="text-sm sm:text-base">
+          Enter your details to register for a new account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form action={_register} className="space-y-4 sm:space-y-6">
+          <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4">
+            <div className="space-y-1 sm:space-y-2">
+              <Input
+                label="First Name"
+                id="first_name"
+                name="first_name"
+                placeholder="First Name"
+                required
+                className="w-full text-sm sm:text-base py-2 sm:py-3"
+              />
+            </div>
+            <div className="space-y-1 sm:space-y-2">
+              <Input
+                label="Last Name"
+                id="last_name"
+                name="last_name"
+                placeholder="Last Name"
+                required
+                className="w-full text-sm sm:text-base py-2 sm:py-3"
+              />
+            </div>
+          </div>
+          <div className="space-y-1 sm:space-y-2">
+            <Input
+              label="Email"
+              id="email"
+              name="email"
+              type="email"
+              placeholder="m@example.com"
+              required
+              className="w-full text-sm sm:text-base py-2 sm:py-3"
+            />
+          </div>
+          <div className="space-y-1 sm:space-y-2">
+            <Input
+              label="Password"
+              type="password"
+              name="password"
+              placeholder="Password"
+              required />
+          </div>
+
+          <Button
+            className="w-full text-sm sm:text-base py-2 sm:py-3"
+            type="submit"
+          >
+            Register
+          </Button>
+        </form>
+      </CardContent>
+      <CardFooter>
+        <p className="text-xs sm:text-sm text-gray-600 text-center w-full mt-4 sm:mt-6">
+          Already have an account?{" "}
+          <Link href="/auth/login" className="text-blue-600 hover:underline">
+            Log in
+          </Link>
+        </p>
+      </CardFooter>
+    </Card>
   )
 }
