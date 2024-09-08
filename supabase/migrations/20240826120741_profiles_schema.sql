@@ -43,3 +43,46 @@ CREATE POLICY update_own_profile ON public.profiles
 CREATE POLICY create_profile ON public.profiles
     FOR INSERT
     WITH CHECK (auth.role() = 'authenticated');
+
+-- Create a function to update profile data from auth.users table
+CREATE OR REPLACE FUNCTION create_profile_on_signup()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO public.profiles (id, first_name, last_name)
+    VALUES (
+        NEW.id, 
+        NEW.raw_user_meta_data->>'first_name', 
+        NEW.raw_user_meta_data->>'last_name'
+    );
+    RETURN NEW;
+END;
+$$ language 'plpgsql' SECURITY DEFINER;
+
+-- Create trigger to update profile data from auth.users table
+CREATE TRIGGER create_profile_on_signup
+    AFTER INSERT ON auth.users
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.create_profile_on_signup();
+
+-- Create a function to update auth.users based on profile changes
+CREATE OR REPLACE FUNCTION update_auth_users_on_profile_change()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE auth.users
+    SET raw_user_meta_data = jsonb_set(
+        raw_user_meta_data,
+         '{first_name,last_name}',
+          to_jsonb(NEW.first_name || ' ' || NEW.last_name)
+        )
+    WHERE id = NEW.id;
+    RETURN NEW;
+END;
+$$ language 'plpgsql' SECURITY DEFINER;
+
+
+-- Create trigger to update auth.users based on profile changes
+CREATE TRIGGER update_auth_users_on_profile_change
+    AFTER UPDATE ON public.profiles
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.update_auth_users_on_profile_change();
+
