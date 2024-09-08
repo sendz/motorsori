@@ -1,10 +1,9 @@
 -- Create profiles table
-CREATE TABLE public.profiles (
+CREATE TABLE IF NOT EXISTS profiles (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -45,35 +44,52 @@ CREATE POLICY create_profile ON public.profiles
     WITH CHECK (auth.role() = 'authenticated');
 
 -- Create a function to update profile data from auth.users table
-CREATE OR REPLACE FUNCTION create_profile_on_signup()
-RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO public.profiles (id, first_name, last_name)
+CREATE OR REPLACE FUNCTION
+  public.create_profile_for_new_user()
+  RETURNS TRIGGER AS
+  $$
+  BEGIN
+  RAISE NOTICE 'Creating profile for user: %, %', NEW.id, NEW.raw_user_meta_data;
+    -- Check if required fields exist
+    IF NEW.raw_user_meta_data->>'first_name' IS NULL OR NEW.raw_user_meta_data->>'last_name' IS NULL THEN
+      RAISE EXCEPTION 'Missing first_name or last_name in user metadata';
+    END IF;
+
+    INSERT INTO public.profiles (id, first_name, last_name, email)
     VALUES (
-        NEW.id, 
-        NEW.raw_user_meta_data->>'first_name', 
-        NEW.raw_user_meta_data->>'last_name'
+      NEW.id,
+      NEW.raw_user_meta_data ->> 'first_name',
+      NEW.raw_user_meta_data ->> 'last_name',
+      NEW.email
     );
+
     RETURN NEW;
-END;
-$$ language 'plpgsql' SECURITY DEFINER;
+  END;
+  $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Create trigger to update profile data from auth.users table
-CREATE TRIGGER create_profile_on_signup
-    AFTER INSERT ON auth.users
-    FOR EACH ROW
-    EXECUTE PROCEDURE public.create_profile_on_signup();
+CREATE OR REPLACE TRIGGER
+  create_profile_on_signup
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION
+    public.create_profile_for_new_user();
 
 -- Create a function to update auth.users based on profile changes
-CREATE OR REPLACE FUNCTION update_auth_users_on_profile_change()
+CREATE OR REPLACE FUNCTION public.update_auth_users_on_profile_change()
 RETURNS TRIGGER AS $$
 BEGIN
     UPDATE auth.users
     SET raw_user_meta_data = jsonb_set(
-        raw_user_meta_data,
-         '{first_name,last_name}',
-          to_jsonb(NEW.first_name || ' ' || NEW.last_name)
-        )
+        jsonb_set(
+            raw_user_meta_data,
+            '{first_name}',
+            to_jsonb(NEW.first_name)
+        ),
+        '{last_name}',
+        to_jsonb(NEW.last_name)
+    )
+    , email = NEW.email
     WHERE id = NEW.id;
     RETURN NEW;
 END;
@@ -84,5 +100,5 @@ $$ language 'plpgsql' SECURITY DEFINER;
 CREATE TRIGGER update_auth_users_on_profile_change
     AFTER UPDATE ON public.profiles
     FOR EACH ROW
-    EXECUTE PROCEDURE public.update_auth_users_on_profile_change();
+    EXECUTE FUNCTION public.update_auth_users_on_profile_change();
 
