@@ -1,12 +1,11 @@
 "use server"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Sidebar } from "./_components/sidebar"
-import { Button } from "@/components/ui/button"
-import { Menu, Bell, Users, BarChart } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import { BarChart, Users } from "lucide-react"
+import { Sidebar } from "./components/sidebar"
+import { PropsWithChildren } from "react"
 
-export default async function Dashboard() {
+export default async function Dashboard({ children }: Readonly<PropsWithChildren>) {
 
     const setSidebarOpen = (open: boolean) => {
 
