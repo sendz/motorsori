@@ -1,47 +1,34 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { revalidatePath } from "next/cache";
+import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createClient } from "../../../../utils/supabase/server";
-import { checkSession } from "../../../../utils/supabase/session";
+import { useEffect } from "react";
+import { useFormState, useFormStatus } from "react-dom";
+import { checkSession, register } from "./actions";
 
-const register = async (formData: FormData) => {
-  "use server"
-  try {
-    const supabase = createClient()
+export default function Register() {
+  const [state, formAction] = useFormState(register, {
+    error: ''
+  })
 
-    const payload = {
-      email: formData.get("email")?.toString()!,
-      password: formData.get("password")?.toString()!,
-      options: {
-        data: {
-          first_name: formData.get("first_name")?.toString()!,
-          last_name: formData.get("last_name")?.toString()!
-        }
-      }
+  const { pending } = useFormStatus()
+
+  const { toast } = useToast()
+
+  useEffect(() => {
+    (async () => {
+      await checkSession()
+    })()
+  }, [])
+
+  useEffect(() => {
+    if (state.error) {
+      toast({ title: state.error, variant: 'destructive' })
     }
-
-    const response = await supabase.auth.signUp(payload)
-    return response
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-export default async function Register() {
-  await checkSession()
-
-  const _register = async (formData: FormData) => {
-    "use server"
-    const data = await register(formData)
-
-    if (data) {
-      revalidatePath("/auth/register")
-      redirect("/auth/login")
-    }
-  }
+  }, [state])
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -52,7 +39,7 @@ export default async function Register() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={_register} className="space-y-4 sm:space-y-6">
+        <form action={formAction} className="space-y-4 sm:space-y-6">
           <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4">
             <div className="space-y-1 sm:space-y-2">
               <Input
@@ -98,6 +85,7 @@ export default async function Register() {
           <Button
             className="w-full text-sm sm:text-base py-2 sm:py-3"
             type="submit"
+            disabled={pending}
           >
             Register
           </Button>

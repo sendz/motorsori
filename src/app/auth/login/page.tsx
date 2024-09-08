@@ -7,7 +7,9 @@ import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
-import { login } from "./actions";
+import { checkSession, login } from "./actions";
+import { createClient } from "../../../../utils/supabase/client";
+import { redirect } from "next/navigation";
 
 export default function Login() {
   const [state, formAction] = useFormState(login, {
@@ -17,6 +19,12 @@ export default function Login() {
   const { pending } = useFormStatus()
 
   const { toast } = useToast()
+
+  useEffect(() => {
+    (async () => {
+      await checkSession()
+    })()
+  }, [])
 
   useEffect(() => {
     if (state.error) {
@@ -55,7 +63,7 @@ export default function Login() {
             />
           </div>
           <Button
-          disabled={pending}
+            disabled={pending}
             className="w-full text-sm sm:text-base py-2 sm:py-3"
             type="submit"
           >
