@@ -1,13 +1,13 @@
 "use client"
 
-import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { login } from "./actions";
-import { useEffect } from "react";
 
 export default function Login() {
   const [state, formAction] = useFormState(login, {
@@ -16,8 +16,12 @@ export default function Login() {
 
   const { pending } = useFormStatus()
 
+  const { toast } = useToast()
+
   useEffect(() => {
-    console.log(state)
+    if (state.error) {
+      toast({ title: state.error, variant: 'destructive' })
+    }
   }, [state])
 
   return (
@@ -30,10 +34,6 @@ export default function Login() {
       </CardHeader>
       <CardContent>
         <form action={formAction} className="space-y-4 sm:space-y-6">
-          {state.error && (
-            <Alert variant="destructive">{state.error}</Alert>
-          )}
-
           <div className="space-y-1 sm:space-y-2">
             <Input
               label="Email"
