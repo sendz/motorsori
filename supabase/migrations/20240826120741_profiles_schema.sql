@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS profiles (
 
 -- Create index on email for faster lookups
 CREATE INDEX idx_profiles_email ON public.profiles(email);
+CREATE INDEX idx_profiles_first_name ON public.profiles(first_name);
+CREATE INDEX idx_profiles_last_name ON public.profiles(last_name);
 
 -- Create a trigger to automatically update the updated_at column
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -101,4 +103,3 @@ CREATE TRIGGER update_auth_users_on_profile_change
     AFTER UPDATE ON public.profiles
     FOR EACH ROW
     EXECUTE FUNCTION public.update_auth_users_on_profile_change();
-
