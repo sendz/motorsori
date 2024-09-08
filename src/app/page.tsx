@@ -25,11 +25,11 @@ export default async function Home() {
             <MenubarContent>
               <MenubarItem>Hello, {user?.user_metadata.first_name}</MenubarItem>
               <MenubarSeparator />
-              <MenubarItem>
                 <Link href="/auth/logout">
+              <MenubarItem>
                   Logout
-                </Link>
               </MenubarItem>
+                </Link>
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
