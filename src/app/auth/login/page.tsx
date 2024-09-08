@@ -47,6 +47,7 @@ export default function Login() {
               label="Email"
               id="email"
               type="email"
+              name="email"
               placeholder="m@example.com"
               required
               className="w-full text-sm sm:text-base py-2 sm:py-3"
@@ -57,6 +58,7 @@ export default function Login() {
               label="Password"
               id="password"
               type="password"
+              name="password"
               placeholder="Your Password"
               required
               className="w-full text-sm sm:text-base py-2 sm:py-3"
