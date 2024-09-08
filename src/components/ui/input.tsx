@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils"
 import { Button } from "./button"
 import { EyeIcon, EyeOffIcon } from "lucide-react"
 import { Label } from "./label"
-import { v4 as uuid } from "uuid"
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -17,7 +16,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const [showPassword, setShowPassword] = React.useState(false)
     const _type = type === "password" ? showPassword ? "text" : "password" : type
     const _className = "w-full text-sm sm:text-base py-2 sm:py-3 pr-10"
-    const _id = id || uuid()
+    const _id = id ? id : label?.toLowerCase().replaceAll(" ", "-")
 
     return (
       <>
