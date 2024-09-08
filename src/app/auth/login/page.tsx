@@ -8,8 +8,6 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { checkSession, login } from "./actions";
-import { createClient } from "../../../../utils/supabase/client";
-import { redirect } from "next/navigation";
 
 export default function Login() {
   const [state, formAction] = useFormState(login, {

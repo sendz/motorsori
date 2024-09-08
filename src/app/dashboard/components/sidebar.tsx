@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { BarChart, ChevronLeft, Home, Menu, Settings, Users } from "lucide-react"
 import { useState } from "react"
 import { UserAvatar } from "./avatar"
+import Link from "next/link"
 
 export const Sidebar = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -19,10 +20,12 @@ export const Sidebar = () => {
                 <nav className="flex-grow">
                     <ul className="p-2 space-y-1">
                         <li>
-                            <Button variant="ghost" className="w-full justify-start">
-                                <Home className="mr-2 h-4 w-4" />
-                                Home
-                            </Button>
+                            <Link href="/dashboard">
+                                <Button variant="ghost" className="w-full justify-start">
+                                    <Home className="mr-2 h-4 w-4" />
+                                    Home
+                                </Button>
+                            </Link>
                         </li>
                         <li>
                             <Button variant="ghost" className="w-full justify-start">
@@ -37,10 +40,12 @@ export const Sidebar = () => {
                             </Button>
                         </li>
                         <li>
-                            <Button variant="ghost" className="w-full justify-start">
-                                <Settings className="mr-2 h-4 w-4" />
-                                Settings
-                            </Button>
+                            <Link href="/dashboard/settings">
+                                <Button variant="ghost" className="w-full justify-start">
+                                    <Settings className="mr-2 h-4 w-4" />
+                                    Settings
+                                </Button>
+                            </Link>
                         </li>
                     </ul>
                 </nav>
