@@ -1,17 +1,14 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
+import { BarChart, ChevronLeft, Home, Menu, Settings, Users } from "lucide-react"
 import { useState } from "react"
 import { UserAvatar } from "./avatar"
-import { Button } from "@/components/ui/button"
-import { ChevronDown, Home, Users, BarChart, Settings, Menu, Bell, ChevronLeft } from "lucide-react"
-import { Input } from "@/components/ui/input"
 
 export const Sidebar = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     return (
         <>
-            
-            {/* SIDEBAR */}
             <div className={`bg-white w-64 min-h-screen flex flex-col transition-all duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static fixed z-30`}>
                 <div className="flex items-center justify-between p-4 border-b">
                     <span className="text-xl font-semibold">Dashboard</span>
@@ -49,7 +46,7 @@ export const Sidebar = () => {
                 </nav>
                 <UserAvatar />
             </div>
-            <header className="md:none bg-white border-b flex items-center justify-between p-4">
+            <header className="md:hidden bg-white border-b flex items-center justify-between p-4">
                 <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSidebarOpen(open => !open)}>
                     <Menu className="h-6 w-6" />
                 </Button>
