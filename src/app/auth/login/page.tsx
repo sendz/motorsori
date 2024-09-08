@@ -1,43 +1,24 @@
-"use server"
+"use client"
 
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { checkSession } from "../../../../utils/supabase/session";
-import { createClient } from "../../../../utils/supabase/server";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { AuthTokenResponse } from "@supabase/supabase-js";
+import { useFormState, useFormStatus } from "react-dom";
+import { login } from "./actions";
+import { useEffect } from "react";
 
-const login = async (formData: FormData) => {
-  "use server"
-  const supabase = createClient()
-  const payload = {
-    email: formData.get("email")?.toString()!,
-    password: formData.get("password")?.toString()!
-  }
+export default function Login() {
+  const [state, formAction] = useFormState(login, {
+    error: ''
+  })
 
-  return supabase.auth.signInWithPassword(payload)
-}
+  const { pending } = useFormStatus()
 
-export default async function Login() {
-  "use server"
-  await checkSession()
-
-  const _login = async (formData: FormData) => {
-    "use server"
-    try {
-      const data: AuthTokenResponse = await login(formData)
-      console.log("DATA", data)
-      if (data.data.user) {
-        revalidatePath("/auth/login")
-        redirect("/")
-      }
-    } catch (e) {
-      console.error("LOGIN ERROR", e)
-    }
-  }
+  useEffect(() => {
+    console.log(state)
+  }, [state])
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -48,7 +29,11 @@ export default async function Login() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={_login} className="space-y-4 sm:space-y-6">
+        <form action={formAction} className="space-y-4 sm:space-y-6">
+          {state.error && (
+            <Alert variant="destructive">{state.error}</Alert>
+          )}
+
           <div className="space-y-1 sm:space-y-2">
             <Input
               label="Email"
@@ -70,6 +55,7 @@ export default async function Login() {
             />
           </div>
           <Button
+          disabled={pending}
             className="w-full text-sm sm:text-base py-2 sm:py-3"
             type="submit"
           >
