@@ -23,13 +23,15 @@ export default async function Home() {
               Profile
             </MenubarTrigger>
             <MenubarContent>
-              <MenubarItem>Hello, {user?.user_metadata.first_name}</MenubarItem>
+              <Link href="/dashboard">
+                <MenubarItem>Hello, {user?.user_metadata.first_name}</MenubarItem>
+              </Link>
               <MenubarSeparator />
-                <Link href="/auth/logout">
-              <MenubarItem>
+              <Link href="/auth/logout">
+                <MenubarItem>
                   Logout
-              </MenubarItem>
-                </Link>
+                </MenubarItem>
+              </Link>
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
