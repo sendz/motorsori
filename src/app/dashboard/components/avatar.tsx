@@ -29,7 +29,7 @@ export const UserAvatar = () => {
             <div className="flex items-center">
                 <Avatar>
                     <AvatarImage src="/placeholder-user.jpg" alt="User" />
-                    <AvatarFallback>
+                    <AvatarFallback className="uppercase">
                         {`${user?.user_metadata.first_name[0]}${user?.user_metadata.last_name[0]}`}
                     </AvatarFallback>
                 </Avatar>
