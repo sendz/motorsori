@@ -25,12 +25,3 @@ export const register = async (_prevState: any, formData: FormData) => {
 
     redirect("/auth/login")
 }
-
-export const checkSession = async () => {
-    const supabase = createClient()
-    const { data : { user }} = await supabase.auth.getUser()
-
-    if (user) {
-      redirect("/")
-    }
-}

@@ -18,12 +18,3 @@ export const login = async (_prevState: any, formData: FormData) => {
 
     redirect("/")
 }
-
-export const checkSession = async () => {
-    const supabase = createClient()
-    const { data : { user }} = await supabase.auth.getUser()
-
-    if (user) {
-      redirect("/")
-    }
-}
