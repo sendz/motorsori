@@ -76,30 +76,3 @@ CREATE OR REPLACE TRIGGER
   FOR EACH ROW
   EXECUTE FUNCTION
     public.create_profile_for_new_user();
-
--- Create a function to update auth.users based on profile changes
-CREATE OR REPLACE FUNCTION public.update_auth_users_on_profile_change()
-RETURNS TRIGGER AS $$
-BEGIN
-    UPDATE auth.users
-    SET raw_user_meta_data = jsonb_set(
-        jsonb_set(
-            raw_user_meta_data,
-            '{first_name}',
-            to_jsonb(NEW.first_name)
-        ),
-        '{last_name}',
-        to_jsonb(NEW.last_name)
-    )
-    , email = NEW.email
-    WHERE id = NEW.id;
-    RETURN NEW;
-END;
-$$ language 'plpgsql' SECURITY DEFINER;
-
-
--- Create trigger to update auth.users based on profile changes
-CREATE TRIGGER update_auth_users_on_profile_change
-    AFTER UPDATE ON public.profiles
-    FOR EACH ROW
-    EXECUTE FUNCTION public.update_auth_users_on_profile_change();
