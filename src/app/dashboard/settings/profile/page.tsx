@@ -26,9 +26,8 @@ export default async function ProfileSettings() {
 
     return (
         <div>
-            <h1>Profile Settings</h1>
-            {profile && <SettingsProfileForm profile={profile} />}
-            {/* <SettingsProfileForm profile={profile} /> */}
+            <h2 className="text-xl font-bold my-4">Profile Settings</h2>
+            <SettingsProfileForm profile={profile} />
         </div>
     )
 }
