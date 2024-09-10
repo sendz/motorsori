@@ -14,6 +14,11 @@ export default function SettingsMenu() {
         <NavigationMenu>
             <NavigationMenuList>
                 <NavigationMenuItem>
+                    <Link href="/dashboard/settings/account" legacyBehavior passHref>
+                        <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), isActive("account") && "bg-gray-300")}>
+                            Account
+                        </NavigationMenuLink>
+                    </Link>
                     <Link href="/dashboard/settings/profile" legacyBehavior passHref>
                         <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), isActive("profile") && "bg-gray-300")}>
                             Profile
