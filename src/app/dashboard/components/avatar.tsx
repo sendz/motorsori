@@ -19,7 +19,7 @@ export const UserAvatar = () => {
             }
 
             if (error?.message) {
-                redirect("/auth/logout")
+                window.location.href = "/auth/logout"
             }
         })()
     }, [])
