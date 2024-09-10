@@ -30,7 +30,8 @@ type SettingsProfileFormProps = {
 
 export default function SettingsProfileForm({ profile }: SettingsProfileFormProps) {
     const [state, formAction] = useFormState(updateProfile, {
-        error: ''
+        error: '',
+        success: ''
     })
 
     const { pending } = useFormStatus()
@@ -41,10 +42,13 @@ export default function SettingsProfileForm({ profile }: SettingsProfileFormProp
         if (state?.error) {
             toast({ title: state.error, variant: 'destructive' })
         }
+        if (state?.success) {
+            toast({ title: state.success })
+        }
     }, [state])
     
     return (
-        <form className="flex flex-col gap-2">
+        <form action={formAction} className="flex flex-col gap-2">
             <input type="hidden" name="id" value={profile?.id} />
             <Input name="first_name" label="First Name" defaultValue={profile?.first_name} />
             <Input name="last_name" label="Last Name" defaultValue={profile?.last_name} />
@@ -58,7 +62,7 @@ export default function SettingsProfileForm({ profile }: SettingsProfileFormProp
             <Input name="education" label="Education" defaultValue={profile?.education} />
             <Input name="birth_date" label="Birth Date" defaultValue={profile?.birth_date} />
             <Label>Gender</Label>
-            <Select name="gender">
+            <Select name="gender" defaultValue={profile?.gender || ''}>
                 <SelectTrigger>
                     <SelectValue placeholder="Select Gender" />
                 </SelectTrigger>

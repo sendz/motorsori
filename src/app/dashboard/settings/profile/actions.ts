@@ -25,6 +25,10 @@ export const updateProfile = async (_prevState: any, formData: FormData) => {
         .single();
 
     if (error) {
-        return { error: error.message }
+        return { error: error.message, success: '' }
+    }
+
+    if (!error) {
+        return { success: "Profile updated successfully", error: '' }
     }
 }

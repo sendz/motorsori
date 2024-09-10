@@ -22,8 +22,6 @@ export default async function ProfileSettings() {
         console.error(error);
     }
 
-    console.log(profile)
-
     return (
         <div>
             <h2 className="text-xl font-bold my-4">Profile Settings</h2>
