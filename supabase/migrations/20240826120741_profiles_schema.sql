@@ -50,6 +50,11 @@ CREATE OR REPLACE FUNCTION
   public.create_profile_for_new_user()
   RETURNS TRIGGER AS
   $$
+  DECLARE
+    v_first_name TEXT;
+    v_last_name TEXT;
+    v_role TEXT;
+    v_family_id UUID;
   BEGIN
   RAISE NOTICE 'Creating profile for user: %, %', NEW.id, NEW.raw_user_meta_data;
     -- Check if required fields exist
@@ -57,14 +62,38 @@ CREATE OR REPLACE FUNCTION
       RAISE EXCEPTION 'Missing first_name or last_name in user metadata';
     END IF;
 
+    v_first_name := NEW.raw_user_meta_data ->> 'first_name';
+    v_last_name := NEW.raw_user_meta_data ->> 'last_name';
+    v_family_id := (NEW.raw_user_meta_data ->> 'family_id')::UUID;
+
     INSERT INTO public.profiles (id, first_name, last_name, email)
     VALUES (
       NEW.id,
-      NEW.raw_user_meta_data ->> 'first_name',
-      NEW.raw_user_meta_data ->> 'last_name',
+      v_first_name,
+      v_last_name,
       NEW.email
     );
 
+    IF v_family_id IS NOT NULL THEN
+        IF NOT EXISTS (SELECT 1 FROM public.families WHERE id = v_family_id) THEN
+            RAISE EXCEPTION 'Family with id % does not exist', v_family_id;
+        END IF;
+
+        v_role := COALESCE(NEW.raw_user_meta_data ->> 'role', 'children');
+        RAISE LOG 'Adding user % to family % with role %', NEW.id, v_family_id, v_role;
+    ELSE
+        INSERT INTO public.families (name)
+        VALUES (CONCAT(v_first_name, '''s Family'))
+        RETURNING id INTO v_family_id;
+
+        v_role := 'owner';
+        RAISE LOG 'Created family % for user %', v_family_id, NEW.id;
+    END IF;
+
+    INSERT INTO public.family_members (family_id, profile_id, role)
+    VALUES (v_family_id, NEW.id, v_role);
+
+    RAISE LOG 'Added user % to family % with role %', NEW.id, v_family_id, v_role;
     RETURN NEW;
   END;
   $$ LANGUAGE plpgsql SECURITY DEFINER;
