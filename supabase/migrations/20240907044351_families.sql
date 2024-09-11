@@ -74,11 +74,7 @@ CREATE POLICY update_own_family ON public.families
 CREATE POLICY read_own_family_members ON public.family_members
     FOR SELECT
     USING (
-        profile_id = auth.uid() OR
-        family_id IN (
-            SELECT family_id FROM public.family_members
-            WHERE profile_id = auth.uid()
-        )
+        profile_id = auth.uid()
     );
 
 -- Corrected insert_family_member policy
