@@ -4,6 +4,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { createClient } from "../../../../../utils/supabase/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { AddFamily } from "./components/add";
 
 export default async function FamilySettingsPage() {
     const supabase = createClient();
@@ -23,16 +24,17 @@ export default async function FamilySettingsPage() {
     const { data, error } = await supabase
         .from('families')
         .select(`
-    name,
-    family_members (
-      profiles (
-        id,
-        first_name,
-        last_name
-      ),
-      role
-    )
-  `)
+            id,
+            name,
+            family_members (
+                profiles (
+                id,
+                first_name,
+                last_name
+                ),
+            role
+            )
+        `)
         .eq('id', userFamily.family_id)
         .single();
 
@@ -56,9 +58,7 @@ export default async function FamilySettingsPage() {
                             <p className="text-sm text-gray-600 mb-4">Manage your family members and settings</p>
                         </div>
                         <div className="w-full md:w-1/2 md:pl-4 flex justify-start md:justify-end">
-                            <Button variant="outline" className="w-full md:w-auto">
-                                Invite Family Member
-                            </Button>
+                            <AddFamily familyId={data.id} />
                         </div>
                     </div>
                     <Table>
@@ -71,11 +71,11 @@ export default async function FamilySettingsPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {data.family_members.map((member: any) => (
+                            {data?.family_members?.length > 0 && data.family_members.map((member: any) => (
                                 <TableRow key={member.profiles.id}>
                                     <TableCell>{member.profiles.first_name} {member.profiles.last_name}</TableCell>
                                     <TableCell>{member.role}</TableCell>
-                                    <TableCell>
+                                    <TableCell className="flex gap-2">
                                         <Button variant="secondary" asChild>
                                             <Link href={`/dashboard/settings/family/${member.profiles.id}`}>
                                                 View
