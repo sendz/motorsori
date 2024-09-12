@@ -74,7 +74,7 @@ CREATE POLICY update_own_family ON public.families
 CREATE POLICY read_own_family_members ON public.family_members
     FOR SELECT
     USING (
-        profile_id = auth.uid()
+        auth.role() = 'authenticated'
     );
 
 -- Corrected insert_family_member policy
